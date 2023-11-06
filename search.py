@@ -3,10 +3,11 @@
 The way to use this code is to subclass Problem to create a class of problems,
 then create problem instances and solve them with calls to the various search
 functions."""
-
+import abstract
 
 from utils import *
 import random
+import queue
 import sys
 import time
 
@@ -110,6 +111,7 @@ def graph_search(problem, fringe):
     fringe.append(Node(problem.initial))
     while fringe:
         node = fringe.pop()
+
         nodes_visited += 1  # Increment the nodes visited counter
         if problem.goal_test(node.state):
             return node
@@ -119,6 +121,8 @@ def graph_search(problem, fringe):
             nodes_generated += len(successors)  # Increment the nodes generated counter
             fringe.extend(successors)
     return None
+
+
 
 # Modify the search functions to measure time
 def breadth_first_graph_search(problem):
@@ -134,7 +138,7 @@ def breadth_first_graph_search(problem):
     print(f"Nodes Generated: {nodes_generated}")
     print(f"Elapsed Time: {elapsed_time} seconds")
     return result
-# Falta uno el inicial
+
 def depth_first_graph_search(problem):
     global nodes_visited, nodes_generated
     nodes_visited = 0
@@ -150,6 +154,44 @@ def depth_first_graph_search(problem):
     return result
 
 
+#Branch and bound
+
+
+def branch_and_bound_search(problem):
+    global nodes_visited, nodes_generated
+    nodes_visited = 0
+    nodes_generated = 1
+    start_time = time.perf_counter()
+
+    # Utilizar una cola de prioridad para almacenar los nodos a explorar
+    fringe = queue.PriorityQueue()
+    initial_node = Node(problem.initial)
+    fringe.put((initial_node.path_cost + problem.h(initial_node), initial_node))
+
+    closed = set()
+
+    while not fringe.empty():
+        _, node = fringe.get()
+        nodes_visited += 1
+
+        if problem.goal_test(node.state):
+            end_time = time.perf_counter()
+            elapsed_time = end_time - start_time
+            print("Branch and Bound Search")
+            print(f"Nodes Visited: {nodes_visited}")
+            print(f"Nodes Generated: {nodes_generated}")
+            print(f"Elapsed Time: {elapsed_time} seconds")
+            return node
+
+        if node.state not in closed:
+            closed.add(node.state)
+            successors = node.expand(problem)
+
+            for successor in successors:
+                nodes_generated += 1
+                fringe.put((successor.path_cost + problem.h(successor), successor))
+
+    return None
 
 # _____________________________________________________________________________
 # The remainder of this file implements examples for the search algorithms.
