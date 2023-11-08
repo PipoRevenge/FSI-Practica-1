@@ -95,11 +95,24 @@ class Node:
 # ______________________________________________________________________________
 ## Uninformed Search algorithms
 
+def print_search_results(name, nodes_visited, nodes_generated, elapsed_time):
+    # Esta función recibe el nombre de la búsqueda, el número de nodos visitados y generados, y el tiempo transcurrido
+    # Imprime los resultados en un formato estándar
+    print(name)
+    print(f"Nodos Visitados: {nodes_visited}")
+    print(f"Nodos Generados: {nodes_generated}")
+    print(f"Tiempo Transcurrido: {elapsed_time} segundos")
+    # Printear coste (plantear como)
+    return
+
+
+
 # Define a global variable to keep track of nodes visited
 nodes_visited = 0
 
 # Define a global variable to keep track of nodes generated
 nodes_generated = 0
+
 
 # Modify the graph_search function to count nodes visited and generated
 def graph_search(problem, fringe):
@@ -123,21 +136,18 @@ def graph_search(problem, fringe):
     return None
 
 
-
 # Modify the search functions to measure time
 def breadth_first_graph_search(problem):
     global nodes_visited, nodes_generated
     nodes_visited = 0
     nodes_generated = 1
-    start_time = time.perf_counter()   # Measure the start time
+    start_time = time.perf_counter()  # Measure the start time
     result = graph_search(problem, FIFOQueue())  # FIFOQueue -> fringe
     end_time = time.perf_counter()  # Measure the end time
     elapsed_time = end_time - start_time
-    print("Breadth-First Search")
-    print(f"Nodes Visited: {nodes_visited}")
-    print(f"Nodes Generated: {nodes_generated}")
-    print(f"Elapsed Time: {elapsed_time} seconds")
+    print_search_results("Breadth-First Search", nodes_visited,nodes_generated,elapsed_time)
     return result
+
 
 def depth_first_graph_search(problem):
     global nodes_visited, nodes_generated
@@ -147,17 +157,14 @@ def depth_first_graph_search(problem):
     result = graph_search(problem, Stack())
     end_time = time.time()  # Measure the end time
     elapsed_time = end_time - start_time
-    print("Depth-First Search")
-    print(f"Nodes Visited: {nodes_visited}")
-    print(f"Nodes Generated: {nodes_generated}")
-    print(f"Elapsed Time: {elapsed_time} seconds")
+    print_search_results("Depth-First Search", nodes_visited,nodes_generated,elapsed_time)
     return result
 
 
-#Branch and bound
+# Branch and bound performance estimation
 
 
-def branch_and_bound_search(problem):
+def branch_and_bound_performance_estimation_search(problem):
     global nodes_visited, nodes_generated
     nodes_visited = 0
     nodes_generated = 1
@@ -172,17 +179,13 @@ def branch_and_bound_search(problem):
 
     while not fringe.empty():
         _, node = fringe.get()
-        nodes_visited += 1
 
         if problem.goal_test(node.state):
             end_time = time.perf_counter()
             elapsed_time = end_time - start_time
-            print("Branch and Bound Search")
-            print(f"Nodes Visited: {nodes_visited}")
-            print(f"Nodes Generated: {nodes_generated}")
-            print(f"Elapsed Time: {elapsed_time} seconds")
+            print_search_results("Branch and Bound Search", nodes_visited,nodes_generated,elapsed_time)
             return node
-
+        nodes_visited += 1
         if node.state not in closed:
             closed.add(node.state)
             successors = node.expand(problem)
@@ -192,6 +195,7 @@ def branch_and_bound_search(problem):
                 fringe.put((successor.path_cost + problem.h(successor), successor))
 
     return None
+
 
 # _____________________________________________________________________________
 # The remainder of this file implements examples for the search algorithms.
