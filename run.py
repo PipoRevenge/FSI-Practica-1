@@ -8,9 +8,6 @@ oe = search.GPSProblem('O', 'E'
                       , search.romania)
 ListaNombres ={"Arad Bucharest", "Oradea Eforie"}
 
-print(search.breadth_first_graph_search(ab).path())
-print(search.depth_first_graph_search(ab).path())
-print(search.branch_and_bound_performance_estimation_search(ab).path())
 
 # Creamos dos problemas de búsqueda GPS con el mapa de Rumanía
 ab = search.GPSProblem('A', 'B', search.romania)
@@ -32,7 +29,8 @@ for nombre, problema in ListaNombres.items():
     #Por depurar comenta los metodos que no quieras ver por pereza a cambiartodo
     #print("Búsqueda en anchura:", search.breadth_first_graph_search(problema).path())
     #print("Búsqueda en profundidad:", search.depth_first_graph_search(problema).path())
-    print("Búsqueda con ramificación y acotación:", search.branch_and_bound_performance_estimation_search(problema).path())
+    #print("Búsqueda con ramificación y acotación:", search.branch_and_bound_search(problema).path())
+    print("Búsqueda con ramificación y acotación con subestimacion:", search.branch_and_bound_performance_estimation_search(problema).path())
     # Dejamos una línea en blanco para separar cada problema
     print()
 

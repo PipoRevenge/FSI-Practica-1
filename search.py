@@ -3,6 +3,7 @@
 The way to use this code is to subclass Problem to create a class of problems,
 then create problem instances and solve them with calls to the various search
 functions."""
+import heapq
 import abstract
 
 from utils import *
@@ -76,6 +77,7 @@ class Node:
 
     def __repr__(self):
         return "<Node %s>" % (self.state,)
+    
 
     def path(self):
         """Create a list of nodes from the root to this node."""
@@ -160,6 +162,39 @@ def depth_first_graph_search(problem):
     print_search_results("Depth-First Search", nodes_visited,nodes_generated,elapsed_time)
     return result
 
+def branch_and_bound_search(problem):
+    global nodes_visited, nodes_generated
+    nodes_visited = 0
+    nodes_generated = 1
+    start_time = time.perf_counter()
+
+    # Utilizar una lista para almacenar los nodos a explorar
+    fringe = []
+    initial_node = Node(problem.initial)
+    fringe.append(initial_node)
+
+    closed = set()
+
+    while fringe:
+        fringe = sorted(fringe, key=lambda node: node.path_cost)  # Ordenar por costo acumulado
+        node = fringe.pop(0)  # Obtener el nodo con el menor costo acumulado
+        nodes_visited += 1
+        if problem.goal_test(node.state):
+            end_time = time.perf_counter()
+            elapsed_time = end_time - start_time
+            print_search_results("Branch and Bound Search", nodes_visited, nodes_generated, elapsed_time)
+            return node
+
+        if node.state not in closed:
+            closed.add(node.state)
+            successors = node.expand(problem)
+
+            for successor in successors:
+                nodes_generated += 1
+                fringe.append(successor)
+
+    return None
+
 
 # Branch and bound performance estimation
 
@@ -170,32 +205,32 @@ def branch_and_bound_performance_estimation_search(problem):
     nodes_generated = 1
     start_time = time.perf_counter()
 
-    # Utilizar una cola de prioridad para almacenar los nodos a explorar
-    fringe = queue.PriorityQueue()
+    # Utilizar una lista para almacenar los nodos a explorar
+    fringe = []
     initial_node = Node(problem.initial)
-    fringe.put((initial_node.path_cost + problem.h(initial_node), initial_node))
+    fringe.append(initial_node)
 
     closed = set()
 
-    while not fringe.empty():
-        _, node = fringe.get()
-
+    while fringe:
+        fringe = sorted(fringe, key=lambda node: node.path_cost + problem.h(node))  # Ordenar por costo acumulado + heurística h
+        node = fringe.pop(0)  # Obtener el nodo con el menor costo acumulado + heurística h
+        nodes_visited += 1
         if problem.goal_test(node.state):
             end_time = time.perf_counter()
             elapsed_time = end_time - start_time
-            print_search_results("Branch and Bound Search", nodes_visited,nodes_generated,elapsed_time)
+            print_search_results("Branch and Bound Search", nodes_visited, nodes_generated, elapsed_time)
             return node
-        nodes_visited += 1
+
         if node.state not in closed:
             closed.add(node.state)
             successors = node.expand(problem)
 
             for successor in successors:
                 nodes_generated += 1
-                fringe.put((successor.path_cost + problem.h(successor), successor))
+                fringe.append(successor)
 
     return None
-
 
 # _____________________________________________________________________________
 # The remainder of this file implements examples for the search algorithms.
