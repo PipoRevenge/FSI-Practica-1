@@ -27,10 +27,10 @@ for nombre, problema in ListaNombres.items():
     print(nombre)
     # Resolvemos el problema usando tres algoritmos de búsqueda diferentes y los imprimimos
     #Por depurar comenta los metodos que no quieras ver por pereza a cambiartodo
-    #print("Búsqueda en anchura:", search.breadth_first_graph_search(problema).path())
+    print("Búsqueda en anchura:", search.breadth_first_graph_search(problema).path())
     #print("Búsqueda en profundidad:", search.depth_first_graph_search(problema).path())
     #print("Búsqueda con ramificación y acotación:", search.branch_and_bound_search(problema).path())
-    print("Búsqueda con ramificación y acotación con subestimacion:", search.branch_and_bound_performance_estimation_search(problema).path())
+    #print("Búsqueda con ramificación y acotación con subestimacion:", search.branch_and_bound_performance_estimation_search(problema).path())
     # Dejamos una línea en blanco para separar cada problema
     print()
 
