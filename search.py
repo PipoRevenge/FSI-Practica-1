@@ -85,7 +85,10 @@ class Node:
         while x.parent:
             result.append(x.parent)
             x = x.parent
+            #print(self.path_cost)
         return result
+    def pathcost(self):
+        return self.path_cost
 
     def expand(self, problem):
         """Return a list of nodes reachable from this node. [Fig. 3.8]"""
@@ -97,7 +100,7 @@ class Node:
 # ______________________________________________________________________________
 ## Uninformed Search algorithms
 
-def print_search_results(name, nodes_visited, nodes_generated, elapsed_time):
+def print_search_results(cost, name, nodes_visited, nodes_generated, elapsed_time):
     # Esta función recibe el nombre de la búsqueda, el número de nodos visitados y generados, y el tiempo transcurrido
     # Imprime los resultados en un formato estándar
     print(name)
@@ -105,6 +108,7 @@ def print_search_results(name, nodes_visited, nodes_generated, elapsed_time):
     print(f"Nodos Generados: {nodes_generated}")
     print(f"Tiempo Transcurrido: {elapsed_time*1000} ms")
     print(f"Tiempo Medio por Iteracion(1000): {elapsed_time} ms")
+    print(f"Costo Total: {cost}")
     # Printear coste (plantear como)
     return
 
@@ -116,7 +120,7 @@ nodes_visited = 0
 # Define a global variable to keep track of nodes generated
 nodes_generated = 0
 
-
+iterations = 1
 # Modify the graph_search function to count nodes visited and generated
 def graph_search(problem, fringe):
     """Search through the successors of a problem to find a goal.
@@ -127,9 +131,9 @@ def graph_search(problem, fringe):
     fringe.append(Node(problem.initial))
     while fringe:
         node = fringe.pop()
-
         nodes_visited += 1  # Increment the nodes visited counter
         if problem.goal_test(node.state):
+
             return node
         if node.state not in closed:
             closed[node.state] = True
@@ -149,7 +153,7 @@ def breadth_first_graph_search(problem):
         result = graph_search(problem, FIFOQueue())  # FIFOQueue -> fringe
     end_time = time.perf_counter()  # Measure the end time
     elapsed_time = end_time - start_time
-    print_search_results("Breadth-First Search", nodes_visited,nodes_generated,elapsed_time)
+    print_search_results(result.pathcost(),"Breadth-First Search", nodes_visited,nodes_generated,elapsed_time)
     return result
 
 
@@ -162,7 +166,7 @@ def depth_first_graph_search(problem):
         result = graph_search(problem, Stack())
     end_time = time.time()  # Measure the end time
     elapsed_time = end_time - start_time
-    print_search_results("Depth-First Search", nodes_visited,nodes_generated,elapsed_time)
+    print_search_results(result.pathcost(),"Depth-First Search", nodes_visited,nodes_generated,elapsed_time)
     return result
 
 def branch_and_bound_search(problem):
@@ -187,9 +191,11 @@ def branch_and_bound_search(problem):
             if problem.goal_test(node.state):
                 end_time = time.perf_counter()
                 elapsed_time = end_time - start_time
-                print_search_results("Branch and Bound Search", nodes_visited, nodes_generated, elapsed_time)
+                print_search_results(node.pathcost(),"Branch and Bound Search", nodes_visited, nodes_generated, elapsed_time)
                 return node
         else:
+            nodes_visited = 0
+            nodes_generated = 1
             iterations=iterations+1
             fringe = []
             initial_node = Node(problem.initial)
@@ -232,9 +238,11 @@ def branch_and_bound_performance_estimation_search(problem):
             if problem.goal_test(node.state):
                 end_time = time.perf_counter()
                 elapsed_time = end_time - start_time
-                print_search_results("Branch and Bound Search", nodes_visited, nodes_generated, elapsed_time)
+                print_search_results(node.pathcost(), "Branch and Bound Performance Estimation Search", nodes_visited, nodes_generated, elapsed_time)
                 return node
         else:
+            nodes_visited = 0
+            nodes_generated = 1
             iterations=iterations+1
             fringe = []
             initial_node = Node(problem.initial)
