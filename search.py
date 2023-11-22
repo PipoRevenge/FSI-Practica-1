@@ -85,8 +85,9 @@ class Node:
         while x.parent:
             result.append(x.parent)
             x = x.parent
-            #print(self.path_cost)
         return result
+
+    # Funtion that returns the pathcost of the algorithm
     def pathcost(self):
         return self.path_cost
 
@@ -100,16 +101,16 @@ class Node:
 # ______________________________________________________________________________
 ## Uninformed Search algorithms
 
-def print_search_results(cost, name, nodes_visited, nodes_generated, elapsed_time):
-    # Esta función recibe el nombre de la búsqueda, el número de nodos visitados y generados, y el tiempo transcurrido
-    # Imprime los resultados en un formato estándar
+def print_search_results(cost, name, visited_nodes, generated_nodes, elapsed_time):
+    # This function is given the name of the search, the cost,
+    # the number of nodes visited and generated, and the elapsed time
+    # Print results in a standard format
     print(name)
-    print(f"Nodos Visitados: {nodes_visited}")
-    print(f"Nodos Generados: {nodes_generated}")
-    print(f"Tiempo Transcurrido: {elapsed_time*1000} ms")
-    print(f"Tiempo Medio por Iteracion(1000): {elapsed_time} ms")
-    print(f"Costo Total: {cost}")
-    # Printear coste (plantear como)
+    print(f"Visited Nodes: {visited_nodes}")
+    print(f"Generated Nodes: {generated_nodes}")
+    print(f"Elapsed Time: {elapsed_time*1000} ms")  #To make the time readable show it as miliseconds
+    print(f"Average Time per Iteration(1000): {elapsed_time} ms")
+    print(f"Total Cost: {cost}")
     return
 
 
@@ -132,8 +133,8 @@ def graph_search(problem, fringe):
     while fringe:
         node = fringe.pop()
         nodes_visited += 1  # Increment the nodes visited counter
+        # Once reached the goal finish
         if problem.goal_test(node.state):
-
             return node
         if node.state not in closed:
             closed[node.state] = True
@@ -160,10 +161,10 @@ def breadth_first_graph_search(problem):
 def depth_first_graph_search(problem):
     global nodes_visited, nodes_generated
     start_time = time.time()  # Measure the start time
-    for i in range(1000):
-        nodes_visited = 0
+    for i in range(1000):     # 1000 iterations to calculate the average time
+        nodes_visited = 0     # Initialize global variables
         nodes_generated = 1
-        result = graph_search(problem, Stack())
+        result = graph_search(problem, Stack())   # Stack -> fringe
     end_time = time.time()  # Measure the end time
     elapsed_time = end_time - start_time
     print_search_results(result.pathcost(),"Depth-First Search", nodes_visited,nodes_generated,elapsed_time)
@@ -171,11 +172,10 @@ def depth_first_graph_search(problem):
 
 def branch_and_bound_search(problem):
     global nodes_visited, nodes_generated, iterations
-    nodes_visited = 0
+    nodes_visited = 0 # Initialize global variables
     nodes_generated = 1
     iterations = 1
-    start_time = time.perf_counter()
-
+    start_time = time.perf_counter()  # Measure the start time
     # Utilizar una lista para almacenar los nodos a explorar
     fringe = []
     initial_node = Node(problem.initial)
@@ -189,7 +189,7 @@ def branch_and_bound_search(problem):
         nodes_visited += 1
         if(iterations==1000):
             if problem.goal_test(node.state):
-                end_time = time.perf_counter()
+                end_time = time.perf_counter() # Measure the end time
                 elapsed_time = end_time - start_time
                 print_search_results(node.pathcost(),"Branch and Bound Search", nodes_visited, nodes_generated, elapsed_time)
                 return node
@@ -221,7 +221,7 @@ def branch_and_bound_performance_estimation_search(problem):
     nodes_visited = 0
     nodes_generated = 1
     iterations = 1
-    start_time = time.perf_counter()
+    start_time = time.perf_counter() # Measure the start time
 
     # Utilizar una lista para almacenar los nodos a explorar
     fringe = []
@@ -236,7 +236,7 @@ def branch_and_bound_performance_estimation_search(problem):
         nodes_visited += 1
         if(iterations==1000):
             if problem.goal_test(node.state):
-                end_time = time.perf_counter()
+                end_time = time.perf_counter() # Measure the end time
                 elapsed_time = end_time - start_time
                 print_search_results(node.pathcost(), "Branch and Bound Performance Estimation Search", nodes_visited, nodes_generated, elapsed_time)
                 return node
