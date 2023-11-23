@@ -128,19 +128,19 @@ def graph_search(problem, fringe):
     The argument fringe should be an empty queue.
     If two paths reach a state, only use the best one. [Fig. 3.18]"""
     global nodes_visited, nodes_generated
-    closed = {}
-    fringe.append(Node(problem.initial))
+    closed = {}  # Dictionary to store visited states
+    fringe.append(Node(problem.initial)) # Add the initial state to the fringe
     while fringe:
-        node = fringe.pop()
+        node = fringe.pop()# Get the next node from the fringe
         nodes_visited += 1  # Increment the nodes visited counter
-        # Once reached the goal finish
+        # Check if the goal is reached
         if problem.goal_test(node.state):
             return node
         if node.state not in closed:
-            closed[node.state] = True
-            successors = node.expand(problem)
+            closed[node.state] = True # Mark the current state as visited
+            successors = node.expand(problem) # Generate successor nodes
             nodes_generated += len(successors)  # Increment the nodes generated counter
-            fringe.extend(successors)
+            fringe.extend(successors)  # Add successors to the fringe
     return None
 
 
@@ -148,10 +148,10 @@ def graph_search(problem, fringe):
 def breadth_first_graph_search(problem):
     global nodes_visited, nodes_generated
     start_time = time.perf_counter()  # Measure the start time
-    for i in range(1000):
+    for i in range(1000): # Repeat the search 1000 times (for statistical purposes)
         nodes_visited = 0
         nodes_generated = 1
-        result = graph_search(problem, FIFOQueue())  # FIFOQueue -> fringe
+        result = graph_search(problem, FIFOQueue())  # Perform graph search using a FIFO queue
     end_time = time.perf_counter()  # Measure the end time
     elapsed_time = end_time - start_time
     print_search_results(result.pathcost(),"Breadth-First Search", nodes_visited,nodes_generated,elapsed_time)
@@ -161,54 +161,56 @@ def breadth_first_graph_search(problem):
 def depth_first_graph_search(problem):
     global nodes_visited, nodes_generated
     start_time = time.time()  # Measure the start time
-    for i in range(1000):     # 1000 iterations to calculate the average time
+    for i in range(1000):     # Repeat the search 1000 times (for statistical purposes)
         nodes_visited = 0     # Initialize global variables
         nodes_generated = 1
-        result = graph_search(problem, Stack())   # Stack -> fringe
+        result = graph_search(problem, Stack())  # Perform graph search using a Stack as queue
     end_time = time.time()  # Measure the end time
     elapsed_time = end_time - start_time
     print_search_results(result.pathcost(),"Depth-First Search", nodes_visited,nodes_generated,elapsed_time)
     return result
 
 def branch_and_bound_search(problem):
-    global nodes_visited, nodes_generated, iterations
-    nodes_visited = 0 # Initialize global variables
-    nodes_generated = 1
-    iterations = 1
-    start_time = time.perf_counter()  # Measure the start time
-    # Utilizar una lista para almacenar los nodos a explorar
-    fringe = []
-    initial_node = Node(problem.initial)
-    fringe.append(initial_node)
+    global nodes_visited, nodes_generated, iterations  # Global variables for counting nodes and iterations
+    nodes_visited = 0  # Initialize the counter for visited nodes
+    nodes_generated = 1  # Initialize the counter for generated nodes
+    iterations = 1  # Initialize the iteration counter
+    start_time = time.perf_counter()  # Record the start time
 
-    closed = set()
+    fringe = []  # Use a list to store nodes to explore (fringe is a list acting as a priority queue)
+    initial_node = Node(problem.initial)  # Create a node for the initial state
+    fringe.append(initial_node)  # Add the initial node to the fringe
+
+    closed = set()  # Set to store visited states
 
     while fringe:
-        fringe = sorted(fringe, key=lambda node: node.path_cost)  # Ordenar por costo acumulado
-        node = fringe.pop(0)  # Obtener el nodo con el menor costo acumulado
-        nodes_visited += 1
-        if(iterations==1000):
-            if problem.goal_test(node.state):
-                end_time = time.perf_counter() # Measure the end time
+        fringe = sorted(fringe, key=lambda node: node.path_cost)  # Sort the fringe by path cost in ascending order
+        node = fringe.pop(0)  # Get the node with the lowest path cost from the fringe
+        nodes_visited += 1  # Increment the visited nodes counter
+
+        if iterations == 1000:  # Check if the maximum number of iterations (1000) is reached
+            if problem.goal_test(node.state):  # Check if the goal is reached
+                end_time = time.perf_counter()  # Record the end time
                 elapsed_time = end_time - start_time
-                print_search_results(node.pathcost(),"Branch and Bound Search", nodes_visited, nodes_generated, elapsed_time)
+                # Print the search results for the final node
+                print_search_results(node.pathcost(), "Branch and Bound Search", nodes_visited, nodes_generated, elapsed_time)
                 return node
         else:
-            nodes_visited = 0
-            nodes_generated = 1
-            iterations=iterations+1
-            fringe = []
-            initial_node = Node(problem.initial)
-            fringe.append(initial_node)
-            closed = set()
+            nodes_visited = 0  # Reset the counter for visited nodes
+            nodes_generated = 1  # Reset the counter for generated nodes
+            iterations = iterations + 1  # Increment the iteration counter
+            fringe = []  # Reset the fringe for the next iteration
+            initial_node = Node(problem.initial)  # Create a new node for the initial state
+            fringe.append(initial_node)  # Add the new initial node to the fringe
+            closed = set()  # Reset the set of visited states
 
-        if node.state not in closed:
-            closed.add(node.state)
-            successors = node.expand(problem)
+        if node.state not in closed:  # Check if the current state has not been visited
+            closed.add(node.state)  # Mark the current state as visited
+            successors = node.expand(problem)  # Generate successor nodes
 
             for successor in successors:
-                nodes_generated += 1
-                fringe.append(successor)
+                nodes_generated += 1  # Increment the generated nodes counter
+                fringe.append(successor)  # Add successor nodes to the fringe
 
     return None
 
@@ -217,45 +219,48 @@ def branch_and_bound_search(problem):
 
 
 def branch_and_bound_performance_estimation_search(problem):
-    global nodes_visited, nodes_generated, iterations
-    nodes_visited = 0
-    nodes_generated = 1
-    iterations = 1
-    start_time = time.perf_counter() # Measure the start time
+    global nodes_visited, nodes_generated, iterations  # Global variables for counting nodes and iterations
+    nodes_visited = 0  # Initialize the counter for visited nodes
+    nodes_generated = 1  # Initialize the counter for generated nodes
+    iterations = 1  # Initialize the iteration counter
+    start_time = time.perf_counter()  # Measure the start time
 
-    # Utilizar una lista para almacenar los nodos a explorar
-    fringe = []
-    initial_node = Node(problem.initial)
-    fringe.append(initial_node)
+    # Use a list to store nodes to explore
+    fringe = []  # Fringe is a list acting as a priority queue
+    initial_node = Node(problem.initial)  # Create a node for the initial state
+    fringe.append(initial_node)  # Add the initial node to the fringe
 
-    closed = set()
+    closed = set()  # Set to store visited states
 
     while fringe:
-        fringe = sorted(fringe, key=lambda node: node.path_cost + problem.h(node))  # Ordenar por costo acumulado + heurística h
-        node = fringe.pop(0)  # Obtener el nodo con el menor costo acumulado + heurística h
-        nodes_visited += 1
-        if(iterations==1000):
-            if problem.goal_test(node.state):
-                end_time = time.perf_counter() # Measure the end time
+        # Sort the fringe by the sum of path cost and heuristic (h) in ascending order
+        fringe = sorted(fringe, key=lambda node: node.path_cost + problem.h(node))
+        node = fringe.pop(0)  # Get the node with the lowest path cost + heuristic (h)
+        nodes_visited += 1  # Increment the visited nodes counter
+
+        if iterations == 1000:  # Check if the maximum number of iterations (1000) is reached
+            if problem.goal_test(node.state):  # Check if the goal is reached
+                end_time = time.perf_counter()  # Measure the end time
                 elapsed_time = end_time - start_time
+                # Print the search results for the final node
                 print_search_results(node.pathcost(), "Branch and Bound Performance Estimation Search", nodes_visited, nodes_generated, elapsed_time)
                 return node
         else:
-            nodes_visited = 0
-            nodes_generated = 1
-            iterations=iterations+1
-            fringe = []
-            initial_node = Node(problem.initial)
-            fringe.append(initial_node)
-            closed = set()
+            nodes_visited = 0  # Reset the counter for visited nodes
+            nodes_generated = 1  # Reset the counter for generated nodes
+            iterations = iterations + 1  # Increment the iteration counter
+            fringe = []  # Reset the fringe for the next iteration
+            initial_node = Node(problem.initial)  # Create a new node for the initial state
+            fringe.append(initial_node)  # Add the new initial node to the fringe
+            closed = set()  # Reset the set of visited states
 
-        if node.state not in closed:
-            closed.add(node.state)
-            successors = node.expand(problem)
+        if node.state not in closed:  # Check if the current state has not been visited
+            closed.add(node.state)  # Mark the current state as visited
+            successors = node.expand(problem)  # Generate successor nodes
 
             for successor in successors:
-                nodes_generated += 1
-                fringe.append(successor)
+                nodes_generated += 1  # Increment the generated nodes counter
+                fringe.append(successor)  # Add successor nodes to the fringe
 
     return None
 
